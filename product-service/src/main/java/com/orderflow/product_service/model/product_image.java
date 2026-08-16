@@ -1,6 +1,5 @@
 package com.orderflow.product_service.model;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import jakarta.persistence.*;
@@ -15,7 +14,7 @@ import lombok.*;
 public class product_image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
