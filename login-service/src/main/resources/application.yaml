@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: login-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/login-service
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8081
+
+jwt:
+  secret: ${JWT_SECRET:change-this-to-a-real-256-bit-secret-before-deploying-anywhere}
+  expiration-ms: 86400000
