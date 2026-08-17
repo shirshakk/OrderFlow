@@ -32,6 +32,9 @@ public class Store {
     @Column(name = "status")
     private Status status;
 
+    @Column(name = "branch_sequence")
+    private Integer branchSequence = 0;
+
     @Column(name = "created_at")
     private Instant createdAt;
 

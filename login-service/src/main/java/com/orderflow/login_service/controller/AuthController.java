@@ -12,6 +12,7 @@ import com.orderflow.login_service.exception.InvalidScopedTokenException;
 import com.orderflow.login_service.exception.StoreNotFoundException;
 import com.orderflow.login_service.model.Branch;
 import com.orderflow.login_service.model.Employee;
+import com.orderflow.login_service.model.Role;
 import com.orderflow.login_service.model.Status;
 import com.orderflow.login_service.model.Store;
 import com.orderflow.login_service.repository.BranchRepository;
@@ -118,6 +119,43 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(SuccessResponse.of(response));
+    }
+
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<SuccessResponse<AuthResponse>> adminLogin(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody EmployeeLoginRequest request) {
+
+        String storeToken = extractBearerToken(authHeader);
+        Claims claims = requireScopedToken(storeToken, "STORE_VERIFIED");
+        Long storeId = claims.get("storeId", Long.class);
+
+        List<Employee> storeEmployees = employeeRepository.findAllByBranchIdAndStatus(storeId, Status.ACTIVE);
+
+        Employee employee = storeEmployees.stream()
+                .filter(e -> e.getRole() == Role.ADMIN && passwordEncoder.matches(request.getPin(), e.getPin()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid PIN or not an admin"));
+
+        String token = jwtUtil.generateToken(employee);
+        AuthResponse response = new AuthResponse(
+                token,
+                employee.getFirstName(),
+                employee.getRole(),
+                employee.getBranch() != null ? employee.getBranch().getCode() : null
+        );
+
+        return ResponseEntity.ok(SuccessResponse.of(response));
+    }
+
+    @PostMapping("/employee/logout")
+    public ResponseEntity<SuccessResponse<String>> employeeLogout() {
+        // In a stateless JWT authentication system, logout is typically handled on the client side
+        // by simply deleting the token. However, if you want to implement server-side logout,
+        // you can maintain a blacklist of tokens or use a token revocation strategy.
+
+        return ResponseEntity.ok(SuccessResponse.of("Logout successful"));
     }
 
     // ---- helpers ----
