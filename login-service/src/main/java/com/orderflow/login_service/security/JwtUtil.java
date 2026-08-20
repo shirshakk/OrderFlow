@@ -27,10 +27,14 @@ public class JwtUtil {
 
     // ---- Final access token (after full login) ----
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails,Claims claims) {
+        Long branchId = claims.get("branchId", Long.class);
+        Long storeId = claims.get("storeId", Long.class);
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("purpose", "ACCESS")
+                .claim("storeId", storeId)
+                .claim("branchId", branchId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

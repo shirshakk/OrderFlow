@@ -1,8 +1,6 @@
 package com.orderflow.login_service.dto.request;
 
-import com.orderflow.login_service.model.Role;
 
-import ch.qos.logback.core.status.Status;
 
 import lombok.Getter;
 import lombok.Setter;

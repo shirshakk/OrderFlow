@@ -1,5 +1,6 @@
 package com.orderflow.login_service.controller;
 
+import com.orderflow.login_service.dto.request.AdminLoginRequest;
 import com.orderflow.login_service.dto.request.BranchVerifyRequest;
 import com.orderflow.login_service.dto.request.EmployeeLoginRequest;
 import com.orderflow.login_service.dto.request.StoreSelectRequest;
@@ -12,7 +13,6 @@ import com.orderflow.login_service.exception.InvalidScopedTokenException;
 import com.orderflow.login_service.exception.StoreNotFoundException;
 import com.orderflow.login_service.model.Branch;
 import com.orderflow.login_service.model.Employee;
-import com.orderflow.login_service.model.Role;
 import com.orderflow.login_service.model.Status;
 import com.orderflow.login_service.model.Store;
 import com.orderflow.login_service.repository.BranchRepository;
@@ -102,7 +102,6 @@ public class AuthController {
         String branchToken = extractBearerToken(authHeader);
         Claims claims = requireScopedToken(branchToken, "BRANCH_VERIFIED");
         Long branchId = claims.get("branchId", Long.class);
-
         List<Employee> branchEmployees = employeeRepository.findAllByBranchIdAndStatus(branchId, Status.ACTIVE);
 
         Employee employee = branchEmployees.stream()
@@ -110,7 +109,7 @@ public class AuthController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid PIN"));
 
-        String token = jwtUtil.generateToken(employee);
+        String token = jwtUtil.generateToken(employee,claims);
         AuthResponse response = new AuthResponse(
                 token,
                 employee.getFirstName(),
@@ -125,20 +124,22 @@ public class AuthController {
     @PostMapping("/admin/login")
     public ResponseEntity<SuccessResponse<AuthResponse>> adminLogin(
             @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody EmployeeLoginRequest request) {
+            @Valid @RequestBody AdminLoginRequest request) {
 
         String storeToken = extractBearerToken(authHeader);
         Claims claims = requireScopedToken(storeToken, "STORE_VERIFIED");
         Long storeId = claims.get("storeId", Long.class);
 
-        List<Employee> storeEmployees = employeeRepository.findAllByBranchIdAndStatus(storeId, Status.ACTIVE);
+        Employee employee = employeeRepository.findByStoreIdAndFirstName(storeId, request.getUsername());
 
-        Employee employee = storeEmployees.stream()
-                .filter(e -> e.getRole() == Role.ADMIN && passwordEncoder.matches(request.getPin(), e.getPin()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid PIN or not an admin"));
+        if (employee == null) {
+            throw new IllegalArgumentException("Invalid credentials or not an admin");
+        }
 
-        String token = jwtUtil.generateToken(employee);
+        if (!passwordEncoder.matches(request.getPassword(), employee.getPassword())) {
+            throw new IllegalArgumentException("Invalid credentials or not an admin");
+        }
+        String token = jwtUtil.generateToken(employee,claims);
         AuthResponse response = new AuthResponse(
                 token,
                 employee.getFirstName(),
