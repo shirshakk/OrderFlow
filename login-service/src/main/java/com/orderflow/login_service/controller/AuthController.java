@@ -1,5 +1,6 @@
 package com.orderflow.login_service.controller;
 
+import com.orderflow.login_service.dto.request.AdminLoginRequest;
 import com.orderflow.login_service.dto.request.BranchVerifyRequest;
 import com.orderflow.login_service.dto.request.EmployeeLoginRequest;
 import com.orderflow.login_service.dto.request.StoreSelectRequest;
@@ -101,7 +102,6 @@ public class AuthController {
         String branchToken = extractBearerToken(authHeader);
         Claims claims = requireScopedToken(branchToken, "BRANCH_VERIFIED");
         Long branchId = claims.get("branchId", Long.class);
-
         List<Employee> branchEmployees = employeeRepository.findAllByBranchIdAndStatus(branchId, Status.ACTIVE);
 
         Employee employee = branchEmployees.stream()
@@ -109,7 +109,7 @@ public class AuthController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid PIN"));
 
-        String token = jwtUtil.generateToken(employee);
+        String token = jwtUtil.generateToken(employee,claims);
         AuthResponse response = new AuthResponse(
                 token,
                 employee.getFirstName(),
@@ -118,6 +118,45 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(SuccessResponse.of(response));
+    }
+
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<SuccessResponse<AuthResponse>> adminLogin(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody AdminLoginRequest request) {
+
+        String storeToken = extractBearerToken(authHeader);
+        Claims claims = requireScopedToken(storeToken, "STORE_VERIFIED");
+        Long storeId = claims.get("storeId", Long.class);
+
+        Employee employee = employeeRepository.findByStoreIdAndFirstName(storeId, request.getUsername());
+
+        if (employee == null) {
+            throw new IllegalArgumentException("Invalid credentials or not an admin");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), employee.getPassword())) {
+            throw new IllegalArgumentException("Invalid credentials or not an admin");
+        }
+        String token = jwtUtil.generateToken(employee,claims);
+        AuthResponse response = new AuthResponse(
+                token,
+                employee.getFirstName(),
+                employee.getRole(),
+                employee.getBranch() != null ? employee.getBranch().getCode() : null
+        );
+
+        return ResponseEntity.ok(SuccessResponse.of(response));
+    }
+
+    @PostMapping("/employee/logout")
+    public ResponseEntity<SuccessResponse<String>> employeeLogout() {
+        // In a stateless JWT authentication system, logout is typically handled on the client side
+        // by simply deleting the token. However, if you want to implement server-side logout,
+        // you can maintain a blacklist of tokens or use a token revocation strategy.
+
+        return ResponseEntity.ok(SuccessResponse.of("Logout successful"));
     }
 
     // ---- helpers ----

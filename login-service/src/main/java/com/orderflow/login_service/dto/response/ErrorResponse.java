@@ -1,6 +1,7 @@
 package com.orderflow.login_service.dto.response;
 
 public class ErrorResponse {
+
     private final String status;
     private final ErrorDetail error;
 
@@ -9,11 +10,11 @@ public class ErrorResponse {
         this.error = error;
     }
 
-    public String status() {
+    public String getStatus() {
         return status;
     }
 
-    public ErrorDetail error() {
+    public ErrorDetail getError() {
         return error;
     }
 

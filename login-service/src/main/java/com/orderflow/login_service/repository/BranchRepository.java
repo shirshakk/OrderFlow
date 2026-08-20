@@ -7,4 +7,7 @@ import java.util.Optional;
 
 public interface BranchRepository extends JpaRepository<Branch, Long> {
     Optional<Branch> findByCodeAndStoreId(String code, Long storeId);
+
+    boolean findByStoreIdAndPhone(Long storeId, String phoneno);
+    boolean existsByCode(String code);
 }

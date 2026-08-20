@@ -3,6 +3,7 @@ package com.orderflow.login_service.dto.response;
 import java.time.Instant;
 
 public class SuccessResponse<T> {
+
     private final String status;
     private final T data;
     private final Instant timestamp;
@@ -13,15 +14,15 @@ public class SuccessResponse<T> {
         this.timestamp = timestamp;
     }
 
-    public String status() {
+    public String getStatus() {
         return status;
     }
 
-    public T data() {
+    public T getData() {
         return data;
     }
 
-    public Instant timestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 

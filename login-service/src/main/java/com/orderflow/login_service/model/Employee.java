@@ -39,8 +39,11 @@ public class Employee implements UserDetails {
     @Column(name = "phone", nullable = false, unique = true)
     private String phone;
 
-    @Column(name = "pin", nullable = false)
+    @Column(name = "pin", nullable = true)
     private String pin;
+
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -63,6 +66,9 @@ public class Employee implements UserDetails {
 
     @Override
     public String getPassword() {
+        return password;
+    }
+    public String getPin() {
         return pin;
     }
 

@@ -45,11 +45,13 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/api/auth/store/select",
-                        "/api/auth/branch/verify",
-                        "/api/auth/employee/login"
-                ).permitAll()
+                // .requestMatchers(
+                //         "/api/auth/store/select",
+                //         "/api/auth/branch/verify",
+                //         "/api/auth/employee/login",
+                //         "/api/auth/createstore"
+                // ).permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

@@ -1,6 +1,8 @@
 package com.orderflow.login_service.exception;
 
 import com.orderflow.login_service.dto.response.ErrorResponse;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,5 +33,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidScopedToken(InvalidScopedTokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.of("INVALID_TOKEN", "401", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        "DATA_INTEGRITY_VIOLATION",
+                        "400",
+                        "Unable to create store because required data is missing or invalid."
+                ));
     }
 }

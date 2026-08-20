@@ -13,4 +13,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     // used to match PIN within a branch (PIN is hashed, so we compare in the service layer)
     List<Employee> findAllByBranchIdAndStatus(Long branchId, Status status);
+
+    List<Employee> findAllByStoreIdAndStatus(Long storeId, Status status);
+
+    Employee findByStoreIdAndFirstName(Long storeId, String firstName);
 }
