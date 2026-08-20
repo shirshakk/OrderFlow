@@ -66,7 +66,7 @@ public class StoreService {
         admin.setCreatedAt(Instant.now());
         admin.setUpdatedAt(Instant.now());
 
-        Employee savedAdmin = employeeRepository.save(admin);
+        employeeRepository.save(admin);
 
         
 
