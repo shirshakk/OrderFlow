@@ -16,5 +16,9 @@ spring:
       hibernate:
         format_sql: true
 
+jwt:
+  secret: ${JWT_SECRET:change-this-to-a-real-256-bit-secret-before-deploying-anywhere}
+  expiration-ms: 86400000
+
 server:
-  port: 8081
+  port: 8082

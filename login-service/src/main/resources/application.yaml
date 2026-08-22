@@ -2,9 +2,9 @@ spring:
   application:
     name: login-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/login-service
-    username: postgres
-    password: postgres
+    url: ${jdbc:postgresql://localhost:5432/login-service}
+    username: ${postgres}
+    password: ${postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:

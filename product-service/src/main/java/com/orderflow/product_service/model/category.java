@@ -1,6 +1,6 @@
 package com.orderflow.product_service.model;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,12 +22,19 @@ public class category {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name =  "status")
-    private String status;
+    private Status status;
+
+    @Column(name = "store_id",nullable = false)
+    private Long store_id;
+
+    @Column(name = "branch_id",nullable = false)
+    private Long branch_id;
 
     @Column(name = "created_at")
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private Instant updatedAt;
 }

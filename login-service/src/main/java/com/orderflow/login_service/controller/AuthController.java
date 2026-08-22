@@ -109,7 +109,7 @@ public class AuthController {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid PIN"));
 
-        String token = jwtUtil.generateToken(employee,claims);
+        String token = jwtUtil.generateToken(employee.getUsername(),claims);
         AuthResponse response = new AuthResponse(
                 token,
                 employee.getFirstName(),
@@ -139,7 +139,7 @@ public class AuthController {
         if (!passwordEncoder.matches(request.getPassword(), employee.getPassword())) {
             throw new IllegalArgumentException("Invalid credentials or not an admin");
         }
-        String token = jwtUtil.generateToken(employee,claims);
+        String token = jwtUtil.generateToken(employee.getUsername(),claims);
         AuthResponse response = new AuthResponse(
                 token,
                 employee.getFirstName(),

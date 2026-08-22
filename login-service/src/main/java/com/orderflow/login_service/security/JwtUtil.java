@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -27,11 +26,11 @@ public class JwtUtil {
 
     // ---- Final access token (after full login) ----
 
-    public String generateToken(UserDetails userDetails,Claims claims) {
+    public String generateToken(String getUsername,Claims claims) {
         Long branchId = claims.get("branchId", Long.class);
         Long storeId = claims.get("storeId", Long.class);
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(getUsername)
                 .claim("purpose", "ACCESS")
                 .claim("storeId", storeId)
                 .claim("branchId", branchId)
@@ -70,10 +69,27 @@ public class JwtUtil {
         return parseClaims(token).getSubject();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, String getUsername) {
         Claims claims = parseClaims(token);
-        return claims.getSubject().equals(userDetails.getUsername())
+        return claims.getSubject().equals(getUsername)
                 && "ACCESS".equals(claims.get("purpose", String.class))
                 && !claims.getExpiration().before(new Date());
+    }
+
+    public String extractRole(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
+    // ---- validation using ONLY the token's own claims -- no DB, no UserDetails ----
+
+    public boolean isValidAccessToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            boolean isAccessToken = "ACCESS".equals(claims.get("purpose", String.class));
+            boolean notExpired = claims.getExpiration().after(new Date());
+            return isAccessToken && notExpired;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
