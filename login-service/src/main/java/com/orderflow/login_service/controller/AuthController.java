@@ -18,7 +18,7 @@ import com.orderflow.login_service.model.Store;
 import com.orderflow.login_service.repository.BranchRepository;
 import com.orderflow.login_service.repository.EmployeeRepository;
 import com.orderflow.login_service.repository.StoreRepository;
-import com.orderflow.login_service.security.JwtUtil;
+import com.orderflow.security_common.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

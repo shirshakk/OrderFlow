@@ -13,7 +13,7 @@ import com.orderflow.login_service.dto.response.SuccessResponse;
 import com.orderflow.login_service.exception.InvalidScopedTokenException;
 import com.orderflow.login_service.model.Store;
 import com.orderflow.login_service.repository.StoreRepository;
-import com.orderflow.login_service.security.JwtUtil;
+import com.orderflow.security_common.JwtUtil;
 import com.orderflow.login_service.service.BranchService;
 
 import io.jsonwebtoken.Claims;

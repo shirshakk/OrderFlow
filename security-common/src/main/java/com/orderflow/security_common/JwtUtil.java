@@ -1,4 +1,4 @@
-package com.orderflow.login_service.security;
+package com.orderflow.security_common;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Map;
-
 @Component
 public class JwtUtil {
 
